@@ -3,11 +3,13 @@ kind: Deployment
 metadata:
   name: {{ include "sit727-2.3d.fullname" . }}
   labels:
+    app.kubernetes.io/servicetag: server
     {{- include "sit727-2.3d.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       {{- include "sit727-2.3d.selectorLabels" . | nindent 6 }}
@@ -40,10 +42,6 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
