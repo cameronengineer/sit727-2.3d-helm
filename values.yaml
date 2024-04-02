@@ -6,9 +6,9 @@ replicaCount: 1
 
 image:
   repository: quay.io/camo1995/ontrack
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: latest
 
 imagePullSecrets: []
 nameOverride: ""
@@ -40,8 +40,16 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: LoadBalancer
+  type: NodePort #LoadBalancer
   port: 8000
+
+env:
+- name: POSTGRES_PASSWORD
+  value: "mysecretpassword"
+- name: POSTGRES_HOST
+  value: "ontrackdb"
+- name: PGDATA
+  value: "/var/lib/postgresql/data/pgdata"
 
 ingress:
   enabled: false
@@ -87,18 +95,18 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
+# Volume for the Postgress Container
+volumes:
+  - name: db-vol
+    persistentVolumeClaim:
+      claimName: ontrack-sit727-database-volume
 
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
+# Volume Mounts for the Postgress Container
+volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: db-vol
+
+
 
 nodeSelector: {}
 
