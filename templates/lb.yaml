@@ -12,5 +12,6 @@ spec:
     - port: 80
       targetPort: 8000
       protocol: TCP
+      name: http
   selector:
     app.kubernetes.io/servicetag: server

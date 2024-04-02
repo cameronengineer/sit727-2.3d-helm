@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: {{ include "sit727-2.3d.fullname" . }}
   labels:
-    app.kubernetes.io/servicetag: server
     {{- include "sit727-2.3d.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
@@ -20,6 +19,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        app.kubernetes.io/servicetag: server
         {{- include "sit727-2.3d.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
